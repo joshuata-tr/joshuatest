@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simple-web-ingress
+  namespace: josh
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /josh(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: simple-web
+                port:
+                  name: http

@@ -1,0 +1,39 @@
+apiVersion: keda.k8s.io/v1alpha1
+kind: ScaledObject
+metadata:
+  name: simple-web-autoscaler
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: simple-web
+  pollingInterval: 15
+  cooldownPeriod: 30
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: cron
+      metadata:
+        timezone: Asia/Kolkata
+        start: "0 12 8 * * *"
+        end: "0 0 12 * * *"
+        schedule: "0 * * * * *"
+    - type: pod
+      metadata:
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+        match:
+          - podLabel: {}
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 50
+          - type: Resource
+            resource:
+              name: memory
+              target:
+                type: AverageValue
+                averageValue: 100Mi
